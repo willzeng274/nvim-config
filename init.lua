@@ -1,46 +1,5 @@
 --[[
 
-=====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
-=====================================================================
-========                                    .-----.          ========
-========         .----------------------.   | === |          ========
-========         |.-""""""""""""""""""-.|   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||   KICKSTART.NVIM   ||   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||                    ||   |-----|          ========
-========         ||:Tutor              ||   |:::::|          ========
-========         |'-..................-'|   |____o|          ========
-========         `"")----------------(""`   ___________      ========
-========        /::::::::::|  |::::::::::\  \ no mouse \     ========
-========       /:::========|  |==hjkl==:::\  \ required \    ========
-========      '""""""""""""'  '""""""""""""'  '""""""""""'   ========
-========                                                     ========
-=====================================================================
-=====================================================================
-
-What is Kickstart?
-
-  Kickstart.nvim is *not* a distribution.
-
-  Kickstart.nvim is a starting point for your own configuration.
-    The goal is that you can read every line of code, top-to-bottom, understand
-    what your configuration is doing, and modify it to suit your needs.
-
-    Once you've done that, you can start exploring, configuring and tinkering to
-    make Neovim your own! That might mean leaving Kickstart just the way it is for a while
-    or immediately breaking it into modular pieces. It's up to you!
-
-    If you don't know anything about Lua, I recommend taking some time to read through
-    a guide. One possible example which will only take 10-15 minutes:
-      - https://learnxinyminutes.com/docs/lua/
-
-    After understanding a bit more about Lua, you can use `:help lua-guide` as a
-    reference for how Neovim integrates Lua.
-    - :help lua-guide
-    - (or HTML version): https://neovim.io/doc/user/lua-guide.html
-
 Kickstart Guide:
 
   TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
@@ -190,6 +149,10 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
+-- For comment + indent
+vim.keymap.set('v', '<', '<gv')
+vim.keymap.set('v', '>', '>gv')
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -227,6 +190,63 @@ vim.opt.rtp:prepend(lazypath)
 --    :Lazy update
 --
 -- NOTE: Here is where you install your plugins.
+
+local syntax_disabled = false
+
+local function toggle_highlighting()
+  if syntax_disabled then
+    -- Re-enable syntax highlighting and filetype detection
+    vim.cmd 'syntax enable'
+    vim.cmd 'filetype on'
+    vim.cmd 'colorscheme tokyonight-night'
+
+    -- Re-enable Tree-sitter
+    -- require('nvim-treesitter.configs').setup {
+    --   highlight = {
+    --     enable = true,
+    --   },
+    -- }
+
+    -- Re-enable LSP
+    local clients = vim.lsp.get_clients()
+    for _, client in ipairs(clients) do
+      -- Re-attach LSP client to current buffer
+      vim.lsp.buf_attach_client(0, client.id)
+    end
+
+    syntax_disabled = false
+    print 'Syntax highlighting, Tree-sitter, and LSP enabled'
+  else
+    vim.treesitter.stop()
+    -- Disable syntax highlighting and filetype detection
+    vim.cmd 'syntax clear'
+    vim.cmd 'filetype off'
+    vim.cmd 'colorscheme off'
+
+    -- Disable Tree-sitter
+    -- require('nvim-treesitter.configs').setup {
+    --   highlight = {
+    --     enable = false,
+    --   },
+    -- }
+
+    -- Detach LSP from the current buffer
+    local clients = vim.lsp.get_clients()
+    for _, client in ipairs(clients) do
+      vim.lsp.buf_detach_client(0, client.id)
+    end
+
+    -- Additional step: Reset 'syntax' to ensure nothing is auto-restored
+    vim.cmd 'set syntax='
+
+    syntax_disabled = true
+    print 'Syntax highlighting, Tree-sitter, and LSP disabled'
+  end
+end
+
+-- Map the function to a command
+vim.api.nvim_create_user_command('ToggleHighlighting', toggle_highlighting, {})
+
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
@@ -254,6 +274,9 @@ require('lazy').setup({
         changedelete = { text = '~' },
       },
     },
+  },
+  {
+    'pbrisbin/vim-colors-off',
   },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
@@ -958,6 +981,118 @@ require('lazy').setup({
     end,
     config = function(_, opts)
       require('Comment').setup(opts)
+    end,
+  },
+  {
+    'nvim-tree/nvim-tree.lua',
+    cmd = { 'NvimTreeToggle', 'NvimTreeFocus' },
+    init = function()
+      vim.keymap.set('n', '<leader>tt', ':NvimTreeToggle<CR>', { noremap = true, silent = true, desc = '[T]oggle Nvim File Tree' })
+      vim.keymap.set('n', '<leader>tf', function()
+        if vim.bo.filetype == 'NvimTree' then
+          vim.cmd 'wincmd p'
+        else
+          vim.cmd 'NvimTreeFocus'
+        end
+      end, { noremap = true, silent = true, desc = '[T]oggle Nvim Tree Focus' })
+    end,
+    opts = {
+      filters = {
+        dotfiles = false,
+        custom = { '\\.DS_Store' },
+        exclude = { vim.fn.stdpath 'config' .. '/lua/custom' },
+      },
+      disable_netrw = true,
+      hijack_netrw = true,
+      hijack_cursor = true,
+      hijack_unnamed_buffer_when_opening = false,
+      sync_root_with_cwd = true,
+      update_focused_file = {
+        enable = true,
+        update_root = false,
+      },
+      view = {
+        adaptive_size = false,
+        side = 'left',
+        width = 30,
+        preserve_window_proportions = true,
+      },
+      git = {
+        enable = false,
+        ignore = true,
+      },
+      filesystem_watchers = {
+        enable = true,
+      },
+      actions = {
+        open_file = {
+          resize_window = true,
+        },
+      },
+      renderer = {
+        root_folder_label = false,
+        highlight_git = false,
+        highlight_opened_files = 'none',
+
+        indent_markers = {
+          enable = false,
+        },
+
+        icons = {
+          show = {
+            file = true,
+            folder = true,
+            folder_arrow = true,
+            git = false,
+          },
+
+          glyphs = {
+            default = '󰈚',
+            symlink = '',
+            folder = {
+              default = '',
+              empty = '',
+              empty_open = '',
+              open = '',
+              symlink = '',
+              symlink_open = '',
+              arrow_open = '',
+              arrow_closed = '',
+            },
+            git = {
+              unstaged = '✗',
+              staged = '✓',
+              unmerged = '',
+              renamed = '➜',
+              untracked = '★',
+              deleted = '',
+              ignored = '◌',
+            },
+          },
+        },
+      },
+    },
+    config = function(_, opts)
+      -- dofile(vim.g.base64_cache .. "nvimtree")
+      require('nvim-tree').setup(opts)
+    end,
+  },
+  {
+    'smolck/command-completion.nvim',
+    config = function()
+      require('command-completion').setup {
+        border = nil, -- What kind of border to use, passed through directly to `nvim_open_win()`,
+        -- see `:help nvim_open_win()` for available options (e.g. 'single', 'double', etc.)
+        max_col_num = 5, -- Maximum number of columns to display in the completion window
+        min_col_width = 20, -- Minimum width of completion window columns
+        use_matchfuzzy = true, -- Whether or not to use `matchfuzzy()` (see `:help matchfuzzy()`)
+        -- to order completion results
+        highlight_selection = true, -- Whether or not to highlight the currently
+        -- selected item, not sure why this is an option tbh
+        highlight_directories = true, -- Whether or not to higlight directories with
+        -- the Directory highlight group (`:help hl-Directory`)
+        tab_completion = true, -- Whether or not tab completion on displayed items is enabled
+      }
     end,
   },
 
