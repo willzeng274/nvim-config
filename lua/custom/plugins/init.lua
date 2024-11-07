@@ -17,6 +17,7 @@ return {
       main_image = 'neovim', -- Main image display (either "neovim" or "file")
       client_id = '793271441293967371', -- Use your own Discord application client id (not recommended)
       log_level = nil, -- Log messages at or above this level (one of the following: "debug", "info", "warn", "error")
+      -- log_level = 'debug',
       debounce_timeout = 10, -- Number of seconds to debounce events (or calls to `:lua package.loaded.presence:update(<filename>, true)`)
       enable_line_number = false, -- Displays the current line number instead of the current project
       blacklist = {}, -- A list of strings or Lua patterns that disable Rich Presence if the current file name, path, or workspace matches
@@ -74,6 +75,64 @@ return {
     },
     config = function()
       vim.g.instant_username = 'balls'
+    end,
+  },
+  {
+    'adelarsq/image_preview.nvim',
+    event = 'VeryLazy',
+    config = function()
+      require('image_preview').setup()
+    end,
+  },
+  {
+    'lervag/vimtex',
+    init = function()
+      vim.g['vimtex_view_method'] = 'skim' -- for variant without xdotool to avoid errors in wayland
+      vim.g['vimtex_quickfix_mode'] = 0 -- suppress error reporting on save and build
+      vim.g['vimtex_mappings_enabled'] = 0 -- Ignore mappings
+      vim.g['vimtex_indent_enabled'] = 0 -- Auto Indent
+      vim.g['tex_flavor'] = 'latex' -- how to read tex files
+      vim.g['tex_indent_items'] = 0 -- turn off enumerate indent
+      vim.g['tex_indent_brace'] = 0 -- turn off brace indent
+      vim.g['vimtex_context_pdf_viewer'] = 'skim' -- external PDF viewer run from vimtex menu command
+      vim.g['vimtex_log_ignore'] = { -- Error suppression:
+        'Underfull',
+        'Overfull',
+        'specifier changed to',
+        'Token not allowed in a PDF string',
+      }
+    end,
+  },
+  {
+    'tamton-aquib/duck.nvim',
+    config = function()
+      vim.keymap.set('n', '<leader>dd', function()
+        require('duck').hatch()
+      end, {})
+      vim.keymap.set('n', '<leader>dk', function()
+        require('duck').cook()
+      end, {})
+      vim.keymap.set('n', '<leader>da', function()
+        require('duck').cook_all()
+      end, {})
+    end,
+  },
+  {
+    'AndrewRadev/discotheque.vim',
+  },
+  {
+    'AndrewRadev/typewriter.vim',
+  },
+  {
+    'goolord/alpha-nvim',
+    -- dependencies = { 'echasnovski/mini.icons' },
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      local startify = require 'alpha.themes.startify'
+      -- available: devicons, mini, default is mini
+      -- if provider not loaded and enabled is true, it will try to use another provider
+      startify.file_icons.provider = 'devicons'
+      require('alpha').setup(startify.config)
     end,
   },
 }

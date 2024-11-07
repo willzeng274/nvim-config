@@ -69,6 +69,8 @@ vim.opt.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
+-- vim.opt.wrap = false
+
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
 --  Remove this option if you want your OS clipboard to remain independent.
@@ -132,8 +134,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 --
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
-
+vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
 -- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
@@ -166,6 +167,16 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.highlight.on_yank()
   end,
 })
+
+-- vim.api.nvim_create_autocmd('FileType', {
+--   pattern = 'tex',
+--   callback = function()
+--     vim.opt_local.expandtab = false
+--     -- vim.opt_local.tabstop = 4
+--     -- vim.opt_local.shiftwidth = 4
+--   end,
+-- })
+vim.cmd [[autocmd FileType * set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab]]
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -905,7 +916,7 @@ require('lazy').setup({
         },
       }
 
-      require('mini.pairs').setup()
+      -- require('mini.pairs').setup()
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
@@ -1095,6 +1106,70 @@ require('lazy').setup({
       }
     end,
   },
+  {
+    'akinsho/flutter-tools.nvim',
+    lazy = false,
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'stevearc/dressing.nvim', -- optional for vim.ui.select
+    },
+  },
+  {
+    'tpope/vim-surround',
+  },
+  {
+    'akinsho/toggleterm.nvim',
+    version = '*',
+    config = function()
+      require('toggleterm').setup {
+        -- size can be a number or function which is passed the current terminal
+        size = function(term)
+          if term.direction == 'horizontal' then
+            return vim.o.lines * 0.25
+          elseif term.direction == 'vertical' then
+            return vim.o.columns * 0.4
+          end
+        end,
+        open_mapping = [[<c-`>]],
+        hide_numbers = false, -- hide the number column in toggleterm buffers
+        shade_filetypes = {},
+        shade_terminals = true,
+        shading_factor = '1', -- the degree by which to darken to terminal colour, default: 1 for dark backgrounds, 3 for light
+        start_in_insert = false,
+        insert_mappings = true, -- whether or not the open mapping applies in insert mode
+        persist_size = false,
+        direction = 'horizontal',
+        close_on_exit = false, -- close the terminal window when the process exits
+        shell = vim.o.shell, -- change the default shell
+        -- This field is only relevant if direction is set to 'float'
+        -- float_opts = {
+        --   -- The border key is *almost* the same as 'nvim_win_open'
+        --   -- see :h nvim_win_open for details on borders however
+        --   -- the 'curved' border is a custom border type
+        --   -- not natively supported but implemented in this plugin.
+        --   border = 'single',
+        --   width = math.floor(vim.o.columns * 0.9),
+        --   height = math.floor(vim.o.lines * 0.9),
+        --   winblend = 3,
+        --   highlights = { border = 'ColorColumn', background = 'ColorColumn' },
+        -- },
+      }
+      -- Key mappings to open specific terminals
+      vim.api.nvim_set_keymap('n', '<leader>``', '<cmd>ToggleTermToggleAll<CR>', { noremap = true, silent = true })
+
+      vim.api.nvim_set_keymap('n', '<leader>`1', '<cmd>1ToggleTerm direction=horizontal<CR>', { noremap = true, silent = true })
+      vim.api.nvim_set_keymap('n', '<leader>`2', '<cmd>2ToggleTerm direction=horizontal<CR>', { noremap = true, silent = true })
+      vim.api.nvim_set_keymap('n', '<leader>`3', '<cmd>3ToggleTerm direction=horizontal<CR>', { noremap = true, silent = true })
+      vim.api.nvim_set_keymap('n', '<leader>`4', '<cmd>4ToggleTerm direction=horizontal<CR>', { noremap = true, silent = true })
+
+      vim.api.nvim_set_keymap('n', '<leader>`v1', '<cmd>1ToggleTerm direction=vertical<CR>', { noremap = true, silent = true })
+      vim.api.nvim_set_keymap('n', '<leader>`v2', '<cmd>2ToggleTerm direction=vertical<CR>', { noremap = true, silent = true })
+      vim.api.nvim_set_keymap('n', '<leader>`v3', '<cmd>3ToggleTerm direction=vertical<CR>', { noremap = true, silent = true })
+      vim.api.nvim_set_keymap('n', '<leader>`v4', '<cmd>4ToggleTerm direction=vertical<CR>', { noremap = true, silent = true })
+
+      vim.api.nvim_set_keymap('n', '<leader>`f', '<cmd>ToggleTerm direction=float<CR>', { noremap = true, silent = true })
+    end,
+  },
 
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
@@ -1108,7 +1183,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
