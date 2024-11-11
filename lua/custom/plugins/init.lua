@@ -2,6 +2,9 @@
 --  I promise not to create any merge conflicts in this directory :)
 --
 -- See the kickstart.nvim README for more information
+
+local sound_dir = '/Users/user/.config/nvim/lua/custom/plugins/sounds/'
+
 return {
   {
     'wakatime/vim-wakatime',
@@ -121,7 +124,20 @@ return {
     'AndrewRadev/discotheque.vim',
   },
   {
-    'AndrewRadev/typewriter.vim',
+    'willzeng274/reverb.nvim',
+    event = 'BufReadPre',
+    opts = {
+      player = 'mpv',
+      max_sounds = 20,
+      sounds = {
+        InsertEnter = { path = sound_dir .. 'carriage1.wav', volume = 50 },
+        InsertLeave = { path = sound_dir .. 'ding1.wav', volume = 50 },
+        -- TextChangedI = { path = sound_dir .. 'click1.wav', volume = 50 },
+        -- TextChangedP = { path = sound_dir .. 'click2.wav', volume = 50 },
+        TextChangedI = { path = { sound_dir .. 'click1.wav', sound_dir .. 'click2.wav', sound_dir .. 'click3.wav' }, volume = 50 },
+        TextChangedP = { path = { sound_dir .. 'click1.wav', sound_dir .. 'click2.wav', sound_dir .. 'click3.wav' }, volume = 50 },
+      },
+    },
   },
   {
     'goolord/alpha-nvim',
