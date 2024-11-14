@@ -1118,6 +1118,9 @@ require('lazy').setup({
     'tpope/vim-surround',
   },
   {
+    'tpope/vim-sleuth',
+  },
+  {
     'akinsho/toggleterm.nvim',
     version = '*',
     config = function()
