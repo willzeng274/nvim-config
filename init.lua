@@ -145,10 +145,23 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+-- Escape mappings for visual mode
+vim.keymap.set('v', 'jk', '<Esc>', { desc = 'Escape from visual mode' })
+vim.keymap.set('v', 'JK', '<Esc>', { desc = 'Escape from visual mode' })
+vim.keymap.set('v', 'kj', '<Esc>', { desc = 'Escape from visual mode' })
+vim.keymap.set('v', 'KJ', '<Esc>', { desc = 'Escape from visual mode' })
+
+-- Escape mappings for insert mode
+vim.keymap.set('i', 'jk', '<Esc>', { desc = 'Escape from insert mode' })
+vim.keymap.set('i', 'JK', '<Esc>', { desc = 'Escape from insert mode' })
+vim.keymap.set('i', 'kj', '<Esc>', { desc = 'Escape from insert mode' })
+vim.keymap.set('i', 'KJ', '<Esc>', { desc = 'Escape from insert mode' })
+
+-- Escape mappings for command mode
+vim.keymap.set('c', 'jk', '<C-c>', { desc = 'Escape from command mode' })
+vim.keymap.set('c', 'JK', '<C-c>', { desc = 'Escape from command mode' })
+vim.keymap.set('c', 'kj', '<C-c>', { desc = 'Escape from command mode' })
+vim.keymap.set('c', 'KJ', '<C-c>', { desc = 'Escape from command mode' })
 
 -- For comment + indent
 vim.keymap.set('v', '<', '<gv')
