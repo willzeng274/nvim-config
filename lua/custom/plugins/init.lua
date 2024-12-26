@@ -91,6 +91,11 @@ return {
     'lervag/vimtex',
     init = function()
       vim.g['vimtex_view_method'] = 'skim' -- for variant without xdotool to avoid errors in wayland
+      -- only need to pass in the file name
+      -- vim.g['vimtex_view_general_viewer'] = 'watch_resume'
+      -- vim.g['vimtex_compiler_latexmk'] = {
+      --   continuous = 0,
+      -- }
       vim.g['vimtex_quickfix_mode'] = 0 -- suppress error reporting on save and build
       vim.g['vimtex_mappings_enabled'] = 0 -- Ignore mappings
       vim.g['vimtex_indent_enabled'] = 0 -- Auto Indent
@@ -170,5 +175,8 @@ return {
     keys = {
       { '<leader>lg', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
     },
+  },
+  {
+    'github/copilot.vim',
   },
 }

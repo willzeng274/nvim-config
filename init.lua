@@ -146,10 +146,10 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 --
 --  See `:help wincmd` for a list of all window commands
 -- Escape mappings for visual mode
-vim.keymap.set('v', 'jk', '<Esc>', { desc = 'Escape from visual mode' })
-vim.keymap.set('v', 'JK', '<Esc>', { desc = 'Escape from visual mode' })
-vim.keymap.set('v', 'kj', '<Esc>', { desc = 'Escape from visual mode' })
-vim.keymap.set('v', 'KJ', '<Esc>', { desc = 'Escape from visual mode' })
+-- vim.keymap.set('v', 'jk', '<Esc>', { desc = 'Escape from visual mode' })
+-- vim.keymap.set('v', 'JK', '<Esc>', { desc = 'Escape from visual mode' })
+-- vim.keymap.set('v', 'kj', '<Esc>', { desc = 'Escape from visual mode' })
+-- vim.keymap.set('v', 'KJ', '<Esc>', { desc = 'Escape from visual mode' })
 
 -- Escape mappings for insert mode
 vim.keymap.set('i', 'jk', '<Esc>', { desc = 'Escape from insert mode' })
@@ -167,6 +167,11 @@ vim.keymap.set('c', 'KJ', '<C-c>', { desc = 'Escape from command mode' })
 vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('v', '>', '>gv')
 
+vim.api.nvim_set_keymap('n', '<C-h>', '<C-w>h', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-j>', '<C-w>j', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-k>', '<C-w>k', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-l>', '<C-w>l', { noremap = true, silent = true })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -181,14 +186,19 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
--- vim.api.nvim_create_autocmd('FileType', {
---   pattern = 'tex',
---   callback = function()
---     vim.opt_local.expandtab = false
---     -- vim.opt_local.tabstop = 4
---     -- vim.opt_local.shiftwidth = 4
---   end,
--- })
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'tex',
+  callback = function()
+    vim.schedule(function()
+      vim.opt_local.expandtab = false
+      vim.opt_local.tabstop = 4
+      vim.opt_local.shiftwidth = 4
+      vim.opt_local.softtabstop = 4
+    end)
+    -- vim.opt_local.tabstop = 4
+    -- vim.opt_local.shiftwidth = 4
+  end,
+})
 vim.cmd [[autocmd FileType * set tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab]]
 
 -- [[ Install `lazy.nvim` plugin manager ]]
@@ -273,7 +283,7 @@ vim.api.nvim_create_user_command('ToggleHighlighting', toggle_highlighting, {})
 
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  -- 'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -434,9 +444,26 @@ require('lazy').setup({
         --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
         --   },
         -- },
+        defaults = {
+          vimgrep_arguments = {
+            'rg',
+            '--color=never',
+            '--no-heading',
+            '--with-filename',
+            '--line-number',
+            '--column',
+            '--smart-case',
+            '--hidden',
+            '--no-ignore-vcs', -- Ignore version control, so .ignore can be applied
+            '--no-ignore-global', -- Ignore global ignore files
+          },
+        },
         pickers = {
           find_files = {
             hidden = true,
+            -- no_ignore = true,
+            no_ignore_vcs = true,
+            no_ignore_global = true,
           },
         },
         extensions = {
