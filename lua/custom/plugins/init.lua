@@ -116,13 +116,13 @@ return {
     config = function()
       vim.keymap.set('n', '<leader>dd', function()
         require('duck').hatch()
-      end, {})
+      end, { desc = 'Hatch a duck' })
       vim.keymap.set('n', '<leader>dk', function()
         require('duck').cook()
-      end, {})
+      end, { desc = 'Cook a duck' })
       vim.keymap.set('n', '<leader>da', function()
         require('duck').cook_all()
-      end, {})
+      end, { desc = 'Cook all ducks' })
     end,
   },
   {
@@ -130,7 +130,9 @@ return {
   },
   {
     'willzeng274/reverb.nvim',
-    event = 'BufReadPre',
+    -- event = 'BufReadPre',
+    lazy = true, -- Plugin is not loaded on start
+    cmd = 'ReverbEnable', -- Plugin is loaded only when :Start is called
     opts = {
       player = 'mpv',
       max_sounds = 20,
@@ -178,5 +180,47 @@ return {
   },
   {
     'github/copilot.vim',
+  },
+  {
+    'vidocqh/data-viewer.nvim',
+    opts = {},
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'kkharji/sqlite.lua', -- Optional, sqlite support
+    },
+  },
+  {
+    'toppair/peek.nvim',
+    event = { 'VeryLazy' },
+    build = 'deno task --quiet build:fast',
+    config = function()
+      require('peek').setup()
+      vim.api.nvim_create_user_command('PeekOpen', require('peek').open, {})
+      vim.api.nvim_create_user_command('PeekClose', require('peek').close, {})
+    end,
+  },
+  {
+    'Julian/lean.nvim',
+    event = { 'BufReadPre *.lean', 'BufNewFile *.lean' },
+
+    dependencies = {
+      'neovim/nvim-lspconfig',
+      'nvim-lua/plenary.nvim',
+
+      -- optional dependencies:
+
+      -- 'andymass/vim-matchup',          -- for enhanced % motion behavior
+      -- 'andrewradev/switch.vim',        -- for switch support
+      -- 'tomtom/tcomment_vim',           -- for commenting
+      -- 'nvim-telescope/telescope.nvim', -- for 2 Lean-specific pickers
+
+      -- a completion engine
+      --    hrsh7th/nvim-cmp or Saghen/blink.cmp are popular choices
+    },
+
+    ---@type lean.Config
+    opts = { -- see below for full configuration options
+      mappings = true,
+    },
   },
 }
