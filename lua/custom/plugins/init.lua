@@ -109,6 +109,60 @@ return {
         'specifier changed to',
         'Token not allowed in a PDF string',
       }
+
+      function AddBold()
+        local mode = vim.fn.visualmode() -- More reliable check for visual mode
+        local line = vim.api.nvim_get_current_line()
+
+        -- If in visual mode, get selection
+        if mode ~= '' then
+          vim.cmd 'normal! gv"zy' -- Copy selection to register z
+          local selection = vim.fn.getreg 'z'
+          local new_line = line:gsub(selection, '\\textbf{' .. selection .. '}', 1)
+          vim.api.nvim_set_current_line(new_line)
+          return
+        end
+
+        -- Otherwise, wrap the current word
+        local word = vim.fn.expand '<cword>'
+        if word ~= '' then
+          local new_line = line:gsub(word, '\\textbf{' .. word .. '}', 1)
+          vim.api.nvim_set_current_line(new_line)
+        end
+      end
+
+      function RemoveBold()
+        local line = vim.api.nvim_get_current_line()
+        local col = vim.fn.col '.'
+
+        -- Find the bold text pattern that contains the cursor
+        local start_idx = 1
+        while true do
+          local s, e, inner = line:find('\\textbf{(.-)}', start_idx)
+          if not s then
+            break
+          end
+
+          -- Check if cursor is within this bold text (including \textbf{})
+          if col >= s and col <= e then
+            -- Replace the bold text with just the inner content
+            local new_line = line:sub(1, s - 1) .. inner .. line:sub(e + 1)
+            vim.api.nvim_set_current_line(new_line)
+            -- Adjust cursor position if needed
+            if col > s + 7 then -- 7 is length of "\textbf{"
+              local new_col = col - 8 -- 8 is length of "\textbf{" + "}"
+              vim.fn.cursor(vim.fn.line '.', new_col)
+            end
+            return
+          end
+          start_idx = e + 1
+        end
+      end
+
+      -- Key mappings
+      vim.api.nvim_set_keymap('n', '<leader>b', ':lua AddBold()<CR>', { noremap = true, silent = true })
+      vim.api.nvim_set_keymap('v', '<leader>b', ':lua AddBold()<CR>', { noremap = true, silent = true })
+      vim.api.nvim_set_keymap('n', '<leader>sb', ':lua RemoveBold()<CR>', { noremap = true, silent = true })
     end,
   },
   {
