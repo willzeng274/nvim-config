@@ -6,10 +6,10 @@
 local sound_dir = '/Users/user/.config/nvim/lua/custom/plugins/sounds/'
 
 return {
-  {
-    'wakatime/vim-wakatime',
-    lazy = false,
-  },
+  -- {
+  --   'wakatime/vim-wakatime',
+  --   lazy = false,
+  -- },
   {
     'andweeb/presence.nvim',
     lazy = false,
@@ -276,5 +276,31 @@ return {
     opts = { -- see below for full configuration options
       mappings = true,
     },
+  },
+  {
+    'stevearc/conform.nvim',
+    lazy = false,
+    opts = {},
+    config = function()
+      -- require("conform").formatters.vsg = {
+      --   inherit = false,
+      --   command = "vsg",
+      --   args = { "--fix", "$FILENAME" }
+      -- }
+
+      require("conform").setup({
+        formatters_by_ft = {
+          vhd = { "vsg" },
+          vhdl = { "vsg" }
+        },
+        format_on_save = {
+          lsp_format = "fallback"
+        }
+      })
+
+      -- vim.api.nvim_create_user_command('VhdFmt', function ()
+      --   require("conform").format({})
+      -- end, {})
+    end,
   },
 }

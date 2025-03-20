@@ -777,23 +777,23 @@ require('lazy').setup({
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'latexindent',
-        'clangd',
-        'black',
+        -- 'clangd',
+        -- 'black',
         'pylint',
-        'rubyfmt',
+        -- 'rubyfmt',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       require('mason-lspconfig').setup {
         ensure_installed = {
           'lua_ls',
-          'gopls',
+          -- 'gopls',
           'rust_analyzer',
           'clangd',
           -- 'pylsp',
           -- 'ruby_lsp',
           'clangd',
-          'ts_ls',
+          -- 'ts_ls',
         },
         automatic_installation = true,
         handlers = {
