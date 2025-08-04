@@ -43,6 +43,23 @@ return {
     end,
   },
   {
+    'kawre/leetcode.nvim',
+    build = ':TSUpdate html',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'MunifTanjim/nui.nvim',
+    },
+    opts = {
+      injector = {
+        ['cpp'] = {
+          imports = function()
+            return { '#include <bits/stdc++.h>', 'using namespace std;' }
+          end,
+        },
+      },
+    },
+  },
+  {
     'ThePrimeagen/vim-be-good',
     cmd = { 'VimBeGood' },
   },
@@ -231,17 +248,17 @@ return {
       { '<leader>lg', '<cmd>LazyGit<cr>', desc = 'LazyGit' },
     },
   },
-  -- {
-  --   'github/copilot.vim',
-  -- },
   {
-    'zbirenbaum/copilot.lua',
-    cmd = 'Copilot',
-    event = 'InsertEnter',
-    config = function()
-      require('copilot').setup {}
-    end,
+    'github/copilot.vim',
   },
+  -- {
+  --   'zbirenbaum/copilot.lua',
+  --   cmd = 'Copilot',
+  --   event = 'InsertEnter',
+  --   config = function()
+  --     require('copilot').setup {}
+  --   end,
+  -- },
   -- {
   --   'yetone/avante.nvim',
   --   event = 'VeryLazy',
@@ -318,66 +335,66 @@ return {
   --     },
   --   },
   -- },
-  {
-    'olimorris/codecompanion.nvim',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      'nvim-treesitter/nvim-treesitter',
-      'echasnovski/mini.diff',
-    },
-    config = function()
-      require('codecompanion').setup {
-        adapters = {
-          copilot = function()
-            return require('codecompanion.adapters').extend('copilot', {
-              schema = {
-                model = {
-                  default = 'claude-3.7-sonnet',
-                },
-              },
-            })
-          end,
-        },
-        display = {
-          action_palette = {
-            provider = 'telescope',
-            opts = {
-              show_default_actions = true,
-              show_default_prompt_library = true,
-            },
-          },
-          chat = {
-            show_references = true,
-            show_header_separator = true,
-            -- show_settings = true, -- this doesn't allow me to select a model
-          },
-          diff = {
-            provider = 'mini_diff',
-          },
-        },
-      }
-
-      vim.keymap.set({ 'n', 'v' }, '<leader>cc', ':CodeCompanionChat Toggle<CR>', {
-        noremap = true,
-        silent = true,
-        desc = 'Toggle CodeCompanion Chat',
-      })
-
-      vim.keymap.set({ 'n', 'v' }, '<C-a>', ':CodeCompanionActions<CR>', {
-        noremap = true,
-        silent = true,
-        desc = 'Open CodeCompanion Actions',
-      })
-
-      vim.keymap.set({ 'n', 'v' }, 'ga', ':CodeCompanionChat Add<CR>', {
-        noremap = true,
-        silent = true,
-        desc = 'Add selection to CodeCompanion Chat',
-      })
-
-      require('custom.plugins.companion.spinner'):init()
-    end,
-  },
+  -- {
+  --   'olimorris/codecompanion.nvim',
+  --   dependencies = {
+  --     'nvim-lua/plenary.nvim',
+  --     'nvim-treesitter/nvim-treesitter',
+  --     'echasnovski/mini.diff',
+  --   },
+  --   config = function()
+  --     require('codecompanion').setup {
+  --       adapters = {
+  --         copilot = function()
+  --           return require('codecompanion.adapters').extend('copilot', {
+  --             schema = {
+  --               model = {
+  --                 default = 'claude-3.7-sonnet',
+  --               },
+  --             },
+  --           })
+  --         end,
+  --       },
+  --       display = {
+  --         action_palette = {
+  --           provider = 'telescope',
+  --           opts = {
+  --             show_default_actions = true,
+  --             show_default_prompt_library = true,
+  --           },
+  --         },
+  --         chat = {
+  --           show_references = true,
+  --           show_header_separator = true,
+  --           -- show_settings = true, -- this doesn't allow me to select a model
+  --         },
+  --         diff = {
+  --           provider = 'mini_diff',
+  --         },
+  --       },
+  --     }
+  --
+  --     vim.keymap.set({ 'n', 'v' }, '<leader>cc', ':CodeCompanionChat Toggle<CR>', {
+  --       noremap = true,
+  --       silent = true,
+  --       desc = 'Toggle CodeCompanion Chat',
+  --     })
+  --
+  --     vim.keymap.set({ 'n', 'v' }, '<C-a>', ':CodeCompanionActions<CR>', {
+  --       noremap = true,
+  --       silent = true,
+  --       desc = 'Open CodeCompanion Actions',
+  --     })
+  --
+  --     vim.keymap.set({ 'n', 'v' }, 'ga', ':CodeCompanionChat Add<CR>', {
+  --       noremap = true,
+  --       silent = true,
+  --       desc = 'Add selection to CodeCompanion Chat',
+  --     })
+  --
+  --     require('custom.plugins.companion.spinner'):init()
+  --   end,
+  -- },
   {
     'vidocqh/data-viewer.nvim',
     opts = {},
